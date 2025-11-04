@@ -2,7 +2,7 @@ from components.cardapio.sobremesa import Sobremesa
 from components.restaurantes import Restaurantes
 from components.restaurante import Restaurante
 from components.sabor_express import SaborExpress
-from components.avaliacao_restaurante import AvaliacaoRestaurante
+from components.cardapio.bebida import Bebida
 from components.cardapio.prato import Prato
 import pytest
 
@@ -143,3 +143,16 @@ def restaurante_fixture():
     )
     
     return restaurante
+
+
+@pytest.fixture
+def bebida_fixture():
+    """
+    Cria um objeto Bebida com preço de 100 para facilitar
+    o cálculo do desconto.
+    """
+    return Bebida(
+        nome="Bebida Teste",
+        preco=100.0,
+        tamanho="500ml"
+    )

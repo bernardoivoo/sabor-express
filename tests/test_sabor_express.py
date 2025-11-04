@@ -164,3 +164,26 @@ def test_lista_restaurantes_sao_exibidos_corretamente(sabor_express_object_fixtu
     assert "Digite o número do restaurante" in output_do_print
     assert "1 - Restaurante 1" in output_do_print
     assert "2 - Restaurante 2" in output_do_print
+
+    
+def test_escolher_pedido_inexistente_levanta_erro(sabor_express_object_fixture):
+    """
+    Testa se o método 'escolher_pedido' levanta um IndexError
+    se um índice inválido (um pedido que não existe) for usado.
+    """
+    # --- ARRANGE (Preparação) ---
+    app = sabor_express_object_fixture
+    
+    # Pegamos o Restaurante 1 (que tem 3 itens no cardápio, índices 0, 1, 2)
+    restaurante_escolhido = app.escolher_restaurante(1)
+    
+    # Definimos um índice que com certeza não existe
+    indice_do_pedido_inexistente = 99
+
+    # --- ACT & ASSERT (Ação e Verificação) ---
+    
+    # Verificamos se o código DENTRO do 'with' levanta um IndexError
+    # Se o IndexError acontecer, o teste PASSA.
+    # Se não acontecer (ou outro erro acontecer), o teste FALHA.
+    with pytest.raises(IndexError):
+        app.escolher_pedido(restaurante_escolhido, indice_do_pedido_inexistente)
