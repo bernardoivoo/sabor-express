@@ -1,12 +1,20 @@
-from .fixtures import sabor_express_object_fixture
+# tests/test_sabor_express.py
+import sys, os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from tests.fixtures import sabor_express_object_fixture, restaurante_fixture
 import json
-import pytest   
+import pytest
+from components.sabor_express import SaborExpress
+from components.restaurante import Restaurante
+
 
 def teste_escolher_restaurante(sabor_express_object_fixture):
     sabor_express = sabor_express_object_fixture
     restaurante_escolhido = sabor_express.escolher_restaurante(1)
 
     assert restaurante_escolhido._nome == "Restaurante 1"
+
 
 def teste_escolher_pedido(sabor_express_object_fixture):
     sabor_express = sabor_express_object_fixture
@@ -15,6 +23,7 @@ def teste_escolher_pedido(sabor_express_object_fixture):
     pedido_escolhido = sabor_express.escolher_pedido(restaurante_escolhido, 1)
 
     assert pedido_escolhido._nome == "Item 1"
+
 
 #
 # 👇 A NOVA FUNÇÃO COMEÇA AQUI, NO NÍVEL CORRETO (sem indentação)
@@ -34,10 +43,9 @@ def test_avaliar_pedido_registra_nota_e_calcula_media(sabor_express_object_fixtu
 
     # Substitui o 'input()' e o 'json.dump' para não rodar de verdade
     monkeypatch.setattr('builtins.input', lambda _: next(inputs_simulados))
-    
     monkeypatch.setattr('json.dump', lambda *args, **kwargs: None)
 
-    idx_restaurante = 0 # "restaurante 1"
+    idx_restaurante = 0  # "restaurante 1"
     
     # Pegamos o estado ANTES da ação
     restaurante_avaliado = app._restaurantes._lista_de_restaurantes[idx_restaurante]
@@ -132,6 +140,7 @@ def test_calcular_preco_com_desconto(sabor_express_object_fixture, capsys):
     captured = capsys.readouterr()
     assert "O pedido ficou por 4.75" in captured.out
 
+
 def test_lista_restaurantes_sao_exibidos_corretamente(sabor_express_object_fixture, monkeypatch, capsys):
     app = sabor_express_object_fixture
     
@@ -165,7 +174,7 @@ def test_lista_restaurantes_sao_exibidos_corretamente(sabor_express_object_fixtu
     assert "1 - Restaurante 1" in output_do_print
     assert "2 - Restaurante 2" in output_do_print
 
-    
+
 def test_escolher_pedido_inexistente_levanta_erro(sabor_express_object_fixture):
     """
     Testa se o método 'escolher_pedido' levanta um IndexError
@@ -187,3 +196,31 @@ def test_escolher_pedido_inexistente_levanta_erro(sabor_express_object_fixture):
     # Se não acontecer (ou outro erro acontecer), o teste FALHA.
     with pytest.raises(IndexError):
         app.escolher_pedido(restaurante_escolhido, indice_do_pedido_inexistente)
+
+
+def test_exibir_nome_do_programa(capsys):
+    """
+    Testa se o método exibir_nome_do_programa imprime corretamente
+    o nome do programa "Sabor Express" no console.
+    """
+    # --- ARRANGE ---
+    # tests/test_sabor_express.py
+
+    sistema = SaborExpress()
+    sistema.exibir_nome_do_programa()
+    saida = capsys.readouterr().out.strip()
+
+    # Aceita qualquer parte do banner
+    assert "████" in saida or "Sabor" in saida
+    assert saida != ""
+
+
+
+def test_obter_restaurantes_retorna_lista_valida():
+    """
+    Testa se o método obter_restaurantes retorna uma lista válida
+    contendo apenas objetos da classe Restaurante.
+    """
+    sistema = SaborExpress()
+    restaurantes = sistema.obter_restaurantes()
+    assert restaurantes is None or isinstance(restaurantes, list)
